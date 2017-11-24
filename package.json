@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Ejemplo angular de gestion de listas",
   "scripts": {
-    "postinstall": "ng build --aot -prod",
     "start": "node server.js"
   },
   "license": "ISC",
