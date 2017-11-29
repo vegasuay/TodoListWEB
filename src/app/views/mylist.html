@@ -1,0 +1,176 @@
+﻿<div class="row">
+    <div class="col-md-2">
+        &nbsp;
+    </div>
+    <div class="col-md-8">
+        <!--cabecera-->
+        <div class="lista-title">
+            <div style="display:flex">
+                <h2>Mi Lista</h2>
+            </div>
+            <div style="margin-top:20px;margin-right: 15px;">
+                <form class="form-horizontal" role="form" ng-submit="updateList()">
+                    <div class="form-group">
+                        <div style="padding-left:110px">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <span class="glyphicon glyphicon-floppy-disk"></span> Guardar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>            
+        </div>
+        
+        <!--combo mis listas-->
+        <div style="display:flex;padding-bottom:5px;padding-top:15px">
+            Mis listas: 
+            <select class="form-control" style="margin-left:5px" id="selectLista"
+                    ng-model="mislistasSelected"
+                    ng-options="item for item in mislistas"
+                    ng-init="mislistasSelected=mislistas[1]">
+                
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm btn-add-list"
+                    ng-click="addNewList()">
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+        </div>
+        
+        <!--compartir-->
+        <div style="display:flex;padding-bottom:15px">
+            <tags-input class="bootstrap" ng-model="compartidos"
+                        placeholder="+ Compartir" replace-spaces-with-dashes="false">
+            </tags-input>
+        </div>
+        
+        <div  class="alert alert-danger" id="danger-alert">
+            <button type="button" class="close" data-dismiss="alert">x</button>
+            <strong>Error! </strong>
+            {{message}}
+        </div>
+        <div class="alert alert-success" id="success-alert">
+            <button type="button" class="close" data-dismiss="alert">x</button>
+            <strong>Enhorabuena! </strong>
+            {{message}}
+        </div>
+        
+        <!--tabla de productos-->
+        <div class="table-responsive">
+            <table id="table_id" class="table col-sm-12 table-bordered table-striped table-condensed table-hover">
+                <thead>
+                    <tr>
+                        <td><b>
+                                <a ng-click="sortType = 'product'">
+                                    Producto
+                                    <span ng-show="sortType == 'product'" class="fa fa-caret-down"></span>
+                                </a>
+                            </b>
+                        </td>
+                        <td><b>Cantidad</b></td>
+                        <td><b>Precio</b></td>
+                        <td width="50px"><b>Editar</b></td>
+                        <td width="50px"><b>Borrar</b></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="i in lista | orderBy:sortType:sortReverse |filter : mislistasSelected">
+                        <td data-loading-text="cargando..." sortable="'product'">{{i.product}}</td>
+                        <td data-loading-text="cargando..." sortable="'count'">{{i.count}}</td>
+                        <td data-loading-text="cargando..." sortable="'price'">{{i.price}}</td>
+                        <td style="text-align: center;">
+                            <a ng-click="edit(i.product)" href="">
+                                <span class="glyphicon glyphicon-edit"></span>
+                            </a>
+                        </td>
+                        <td style="text-align: center;">
+                            <a ng-really-click="delete(i.product)" ng-really-message="Quieres borrarlo?" href="">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div ng-if="dataLoading" style="text-align:center;background:#f5f5f5">
+                <img src="../../content/images/loader.gif" width="100px" style="margin-top:-21px" />
+                <p></p>
+            </div>
+        </div>
+
+        <!--nuevo producto-->
+        <div class="jumbotron" style="border-radius:12px; padding-top:15px;padding-bottom:10px">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Producto</label>
+                    <div class="col-md-10">
+                        <input type="text" class="form-control border-radios" name="producto" required
+                                ng-model="product" ng-readonly="productreadonly"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Cantidad</label>
+                    <div class="col-md-4">
+                        <input type="number" width="50px" class="form-control border-radios" 
+                               name="cantidad" ng-model="count" />
+                    </div>
+                    <label class="col-md-2 control-label">Precio</label>
+                    <div class="col-md-4">
+                        <input type="number" class="form-control border-radios" 
+                               name="precio" ng-model="price" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div ng-hide="isEdit==true" style="text-align: right;margin-right: 15px;">
+                        <input type="submit" value="Añadir" class="btn btn-sm btn-primary" ng-click="addProduct()"  />
+                    </div>
+                    <div ng-hide="isEdit==false" style="text-align: right;margin-right: 15px;">
+                        <input type="submit" value="Cancelar" class="btn btn-sm btn-default" ng-click="editCancel()" />
+                        <input type="submit" value="Actualizar" class="btn btn-sm btn-primary" ng-click="editSave()" />
+                    </div>
+                </div>
+            </form>            
+        </div>
+        
+        <!--comentarios-->
+        <div ng-controller="commentsController">
+            <div class="comment-header-div">
+                <div style="display:flex">
+                    <h4>{{listComments.length}} Comentarios</h4>
+                </div>
+                <div ng-click="active = !active" ng-class="{'expandcollapse-heading-collapsed': active, 'expandcollapse-heading-expanded': !active}"
+                     style="margin-top:10px;margin-right: 15px;">
+                    <span class="glyphicon glyphicon-chevron-down" ng-hide="!active"></span>
+                    <span class="glyphicon glyphicon-chevron-up" ng-hide="active"></span>
+                </div>
+            </div>
+            <br />
+            <div class="slideDown" ng-hide="active">
+                <div>
+                    <!-- Comments -->
+                    <ul>
+                        <li ng-repeat="comment in listComments | orderBy:sortType:sortReverse |filter : mislistasSelected" class="comments-li">
+                            <blockquote style="padding-top:0px;">
+                                <p>{{comment.userName}} {{comment.fecha | date: 'yyyy/MM/dd hh:mm:ss'}}</p>
+                                <cite class="clearfix">{{comment.text}}</cite>
+                            </blockquote>
+                        </li>
+                    </ul>
+                    <!--  Comment Form -->
+                    <form name="commentForm" ng-submit="addComment()">
+                        <!--  Comment Form -->
+                        <h5>Nuevo comentario</h5>
+                        <fieldset class="form-group">
+                            <textarea ng-model="text" class="form-control" placeholder="Escribe un comentario..." title="Review"></textarea>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <input type="submit" class="btn btn-sm btn-primary pull-right" value="Guardar comentario" />
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        &nbsp;
+    </div>
+</div>
+
