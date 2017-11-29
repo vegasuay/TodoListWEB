@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Ejemplo angular de gestion de listas",
   "scripts": {
-    "start": "node server.js"
+    "start": "npm run lite",
+    "lite": "lite-server"
   },
   "license": "ISC",
   "dependencies": {
@@ -17,9 +18,7 @@
     "zone.js": "0.8.18"
   },
   "devDependencies": {
-    "concurrently": "^3.5.0",
-    "lite-server": "^2.3.0",
-    "typescript": "2.6.1"
+    "lite-server": "^2.3.0"
   },
   "repository": {}
 }
